@@ -51,7 +51,10 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie03_StudenciPosortowani()
     {
-        throw Niezaimplementowano(nameof(Zadanie03_StudenciPosortowani));
+        var students = from student  in DaneUczelni.Studenci
+            orderby student.Nazwisko, student.Imie
+                select student.NumerIndeksu + " " + student.Imie + " " + student.Nazwisko + "\n";
+        return students;
     }
 
     /// <summary>
@@ -66,7 +69,13 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie04_PierwszyPrzedmiotAnalityczny()
     {
-        throw Niezaimplementowano(nameof(Zadanie04_PierwszyPrzedmiotAnalityczny));
+        var subject = DaneUczelni.Przedmioty.FirstOrDefault(p => p.Kategoria == "Analytics");
+        if (subject == null)
+        {
+            return ["nie znaleziono przedmiotu"];
+        }
+        else return [subject.Nazwa + " " + subject.DataStartu + "\n"];
+
     }
 
     /// <summary>
