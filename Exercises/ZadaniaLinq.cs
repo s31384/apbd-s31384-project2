@@ -226,7 +226,24 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie12_ParyStudentPrzedmiot()
     {
-        throw Niezaimplementowano(nameof(Zadanie12_ParyStudentPrzedmiot));
+        var studentRecord = DaneUczelni.Studenci.Join(DaneUczelni.Zapisy,
+            student => student.Id,
+            zapis => zapis.StudentId,
+            (student, zapis) =>
+            new {
+                studentName = student.Imie, studentSurname = student.Nazwisko, pId = zapis.PrzedmiotId
+            });
+        var studentPrzedmiot = studentRecord.Join(DaneUczelni.Przedmioty,
+            studentRec => studentRec.pId,
+            przedmiot => przedmiot.Id,
+            (studentRec, przedmiot) =>
+            {
+                return studentRec.studentName + " " + studentRec.studentSurname + " " + przedmiot.Nazwa;
+            }
+        );
+        
+        return studentPrzedmiot;
+
     }
 
     /// <summary>
@@ -241,7 +258,17 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie13_GrupowanieZapisowWedlugPrzedmiotu()
     {
-        throw Niezaimplementowano(nameof(Zadanie13_GrupowanieZapisowWedlugPrzedmiotu));
+        var subcount = DaneUczelni.Przedmioty.GroupJoin(
+            DaneUczelni.Zapisy,
+            przedmioty => przedmioty.Id,
+            zapis => zapis.PrzedmiotId,
+            (przedmiot, zapisy) =>
+            {
+                return przedmiot.Nazwa + " " + zapisy.Count();
+            }
+            );
+
+        return subcount;
     }
 
     /// <summary>
@@ -258,7 +285,17 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie14_SredniaOcenaNaPrzedmiot()
     {
-        throw Niezaimplementowano(nameof(Zadanie14_SredniaOcenaNaPrzedmiot));
+        var przedmiotRecord = DaneUczelni.Przedmioty.GroupJoin(
+            DaneUczelni.Zapisy.Where(zapis => zapis.OcenaKoncowa != null),
+            przedmiot => przedmiot.Id,
+            zapis => zapis.PrzedmiotId,
+            (przedmiot, zapisy) =>
+            {
+                return przedmiot.Nazwa + " " + zapisy.Average(z => z.OcenaKoncowa);
+            }
+        );
+        
+        return przedmiotRecord;
     }
 
     /// <summary>
@@ -274,7 +311,17 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie15_ProwadzacyILiczbaPrzedmiotow()
     {
-        throw Niezaimplementowano(nameof(Zadanie15_ProwadzacyILiczbaPrzedmiotow));
+        var prw_prz = DaneUczelni.Prowadzacy.GroupJoin(
+            DaneUczelni.Przedmioty,
+            prw => prw.Id,
+            prz => prz.ProwadzacyId,
+            (prw, przedmioty) =>
+            {
+                return prw.Imie + " " + prw.Nazwisko + " " + przedmioty.Count();
+            }
+        );
+        
+        return prw_prz;
     }
 
     /// <summary>
