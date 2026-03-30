@@ -422,7 +422,13 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Wyzwanie03_ProwadzacyISredniaOcenNaIchPrzedmiotach()
     {
-        throw Niezaimplementowano(nameof(Wyzwanie03_ProwadzacyISredniaOcenNaIchPrzedmiotach));
+        var avg = from prw in DaneUczelni.Prowadzacy
+            join prz in DaneUczelni.Przedmioty on  prw.Id equals prz.ProwadzacyId
+            join zap in DaneUczelni.Zapisy on prz.Id equals zap.PrzedmiotId
+            where zap.OcenaKoncowa != null
+            group zap by new {prw.Imie, prw.Nazwisko} into g
+            select g.Key.Imie + " " + g.Key.Nazwisko + " " + g.Average(zap => zap.OcenaKoncowa);
+        return avg;
     }
 
     /// <summary>
@@ -440,7 +446,13 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Wyzwanie04_MiastaILiczbaAktywnychZapisow()
     {
-        throw Niezaimplementowano(nameof(Wyzwanie04_MiastaILiczbaAktywnychZapisow));
+        var zapByCity = from s in DaneUczelni.Studenci
+            join z in DaneUczelni.Zapisy on s.Id equals z.StudentId
+            where z.CzyAktywny
+                group z by s.Miasto into g
+                orderby g.Count() descending
+                select g.Key + " "  + g.Count();
+        return zapByCity;
     }
 
     private static NotImplementedException Niezaimplementowano(string nazwaMetody)
