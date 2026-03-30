@@ -338,7 +338,21 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie16_NajwyzszaOcenaKazdegoStudenta()
     {
-        throw Niezaimplementowano(nameof(Zadanie16_NajwyzszaOcenaKazdegoStudenta));
+        var studengrades = DaneUczelni.Studenci.Join(DaneUczelni.Zapisy,
+                student => student.Id,
+                zapis => zapis.StudentId,
+                (student, zapis) => new
+                {
+                    studentName = student.Imie + " " + student.Nazwisko, ocena = zapis.OcenaKoncowa
+                })
+            .Where(s => s.ocena != null)
+            .GroupBy(s => s.studentName,
+                (student, oceny) =>
+                {
+                    return student + " " + oceny.Max(o => o.ocena);
+                });
+
+        return studengrades;
     }
 
     /// <summary>
@@ -356,7 +370,15 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Wyzwanie01_StudenciZWiecejNizJednymAktywnymPrzedmiotem()
     {
-        throw Niezaimplementowano(nameof(Wyzwanie01_StudenciZWiecejNizJednymAktywnymPrzedmiotem));
+        var minone = from s in DaneUczelni.Studenci
+            join zapis in DaneUczelni.Zapisy on s.Id equals zapis.StudentId
+            where zapis.CzyAktywny
+            group zapis by new { s.Imie, s.Nazwisko }
+            into g
+            where g.Any()
+                select  g.Key.Imie + " " + g.Key.Nazwisko + " "+ g.Count();
+
+    return minone;
     }
 
     /// <summary>
@@ -373,7 +395,16 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Wyzwanie02_PrzedmiotyStartujaceWKwietniuBezOcenKoncowych()
     {
-        throw Niezaimplementowano(nameof(Wyzwanie02_PrzedmiotyStartujaceWKwietniuBezOcenKoncowych));
+        var przWKwietniu = (from p in DaneUczelni.Przedmioty
+            join zapis in DaneUczelni.Zapisy on p.Id equals zapis.PrzedmiotId
+            where p.DataStartu.Month == 4
+            group zapis by p.Nazwa
+            into g
+            where g.All(z => z.OcenaKoncowa == null)
+            select g.Key);
+
+    return  przWKwietniu;
+
     }
 
     /// <summary>
