@@ -131,7 +131,8 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie07_LiczbaAktywnychZapisow()
     {
-        throw Niezaimplementowano(nameof(Zadanie07_LiczbaAktywnychZapisow));
+        int count =  DaneUczelni.Zapisy.Count(z=> z.CzyAktywny);
+        return [count.ToString()];
     }
 
     /// <summary>
@@ -145,7 +146,12 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie08_UnikalneMiastaStudentow()
     {
-        throw Niezaimplementowano(nameof(Zadanie08_UnikalneMiastaStudentow));
+        var students = DaneUczelni.Studenci.DistinctBy(s => s.Miasto);
+        var cities = from s in students
+            
+            orderby s.Miasto
+                select s.Miasto;
+        return cities;
     }
 
     /// <summary>
@@ -160,7 +166,10 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie09_TrzyNajnowszeZapisy()
     {
-        throw Niezaimplementowano(nameof(Zadanie09_TrzyNajnowszeZapisy));
+        var record = (from r in DaneUczelni.Zapisy
+            orderby r.DataZapisu descending
+                select r.DataZapisu +  " "+ r.StudentId + " " + r.PrzedmiotId).Take(3);
+        return record;
     }
 
     /// <summary>
@@ -176,7 +185,10 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie10_DrugaStronaPrzedmiotow()
     {
-        throw Niezaimplementowano(nameof(Zadanie10_DrugaStronaPrzedmiotow));
+        var page = (from p in DaneUczelni.Przedmioty
+            orderby p.Nazwa
+            select p.Nazwa + " " + p.Kategoria).Skip(2).Take(2);
+        return page;
     }
 
     /// <summary>
@@ -191,7 +203,14 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie11_PolaczStudentowIZapisy()
     {
-        throw Niezaimplementowano(nameof(Zadanie11_PolaczStudentowIZapisy));
+        var join = DaneUczelni.Studenci.Join(DaneUczelni.Zapisy,
+            student => student.Id,
+            zapis => zapis.StudentId,
+            (student, zapis) =>
+            {
+                return student.Imie + " " + student.Nazwisko + " " + zapis.DataZapisu;
+            });
+        return join;
     }
 
     /// <summary>
