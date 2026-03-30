@@ -16,7 +16,11 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie01_StudenciZWarszawy()
     {
-        throw Niezaimplementowano(nameof(Zadanie01_StudenciZWarszawy));
+        var students = from student in DaneUczelni.Studenci
+                                            where student.Miasto == "Warsaw"
+                                            select student.NumerIndeksu + " "+ student.Imie+ " " + student.Nazwisko+ " "+ student.Miasto + "\n";
+        return students;
+                            
     }
 
     /// <summary>
@@ -30,7 +34,9 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie02_AdresyEmailStudentow()
     {
-        throw Niezaimplementowano(nameof(Zadanie02_AdresyEmailStudentow));
+        var emails = from student in DaneUczelni.Studenci
+            select student.Email;
+        return emails;
     }
 
     /// <summary>
